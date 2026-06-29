@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<link rel="hoja de estilo" href="style.css">
+<html lang="es" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Simulador de Electrostática</title>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+   <!--Plotly js-->
+      <!--script src="https://cdn.plot.ly/plotly-3.5.1.min.js" charset="utf-8"></script-->
+    <!-- libreria three.js -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS2DRenderer.js"></script>
+    
+
+        
+    </head> 
+   
+   <body>
+        <!-- Referencia al archivo JavaScript -->
+    
+      <header> 
+        <h1>Simulador de Física II - Fuerza Eléctrica</h1>  
+        <nav>
+            <button id="Fuerza-Electrica" type="button" class="btn btn-primary">Fuerza Eléctrica</button>
+            <!--Aca se pueden agregar los otros temas de la unidad 1-->
+        </nav>
+        <style>
+            #fuerza-electrica-form {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;}
+        </style>
+        <style>
+            #boton-calcular-fe {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;}
+        </style>
+            
+      </header>
+      <main>
+        <form id="fuerza-electrica-form">
+            <div class="mb-3">
+                <label for="cantidadCargas" class="form-label">Cantidad de Cargas</label>
+                <input type="number" class="form-control" id="cantidadCargas">
+                <button id="nextFE" type="button" class="btn btn-primary">Siguiente</button>
+                <div id="contenedor-seleccion-cargas"></div>
+                <button id="boton-calcular-fe" type="button" class="btn btn-primary">Calcular</button>
+            </div>
+
+            <div class="text-start mt-4">
+                <button class="btn btn-sm btn-outline-secondary text-light" type="button" data-bs-toggle="collapse" data-bs-target="#teoriaCoulomb" aria-expanded="true" aria-controls="teoriaCoulomb">
+                    📖 Ocultar/Mostrar Teoría
+                </button>
+            </div>
+
+            <div class="collapse show container mt-2 text-light bg-dark p-4 rounded text-left" id="teoriaCoulomb">
+                <h4 class="mb-3 text-start">Cálculo de la Fuerza de Coulomb</h4>
+                <p style="line-height: 1.0; font-size: 12px;">
+                    Recorda que para calcular la fuerza eléctica es necesario que las cargas tengan valores distintos de cero. Si una carga tiene valor cero, no generará fuerzas sobre sí misma ni sobre las otras cargas, por lo que no se podrá calcular la fuerza eléctrica correctamente. La fuerza eléctrica es una interacción mutua. Para que exista una fuerza de Coulomb, se necesitan sí o sí dos cosas:<br>
+                    <ol style="line-height: 1.0; font-size: 12px;">
+                        <li>Una carga que genere un campo eléctrico en el espacio.</li>
+                        <li>Otra carga que "sienta" ese campo eléctrico y reaccione a él.</li>
+                    </ol>
+                    <p style="line-height: 1.0; font-size: 12px;">La fuerza de interacción entre las cargas se calcula mediante la siguiente expresión:</p>
+                </p>
+                <div class="my-4 p-3 bg-secondary bg-opacity-10 rounded d-inline-block">
+                    <img src="https://latex.codecogs.com/svg.image?F%20=%20k%20%5Ccdot%20%5Cfrac%7B%7Cq_1%20%5Ccdot%20q_2%7C%7D%7Br%5E2%7D" 
+                        alt="Ley de Coulomb: F = k * (|q1 * q2| / r^2)" 
+                        style="filter: invert(1); height: 30px;">
+                    <p style="font-size: 12px; margin-top: 10px; margin-bottom: 5px;">Donde:</p>
+                    <ul style="font-size: 12px; margin-bottom: 0;">
+                        <li><strong>F</strong> es la fuerza electrostática (N).</li>
+                        <li><strong>k</strong> es la constante de Coulomb 8.99x10^9 N.m^2/C^2.</li>
+                        <li><strong>q₁ y q₂</strong> son los valores de las cargas (C).</li>
+                        <li><strong>r</strong> es la distancia de separación entre ambas (m).</li>
+                    </ul>
+                </div>
+            </div>
+        </form>
+            <script>
+            const botonFuerzaElectrica = document.getElementById('Fuerza-Electrica');
+            const formularioFuerzaElectrica = document.getElementById('fuerza-electrica-form');
+            const botonNextFE = document.getElementById('nextFE');
+            const botonCalcularFE = document.getElementById('boton-calcular-fe');
+
+            // =========================================================
+            // 1. EVENTO: Mostrar / Ocultar Formulario Principal
+            // =========================================================
+            botonFuerzaElectrica.addEventListener('click', () => {
+                if (formularioFuerzaElectrica.style.display === 'none' || formularioFuerzaElectrica.style.display === '') {
+                    formularioFuerzaElectrica.style.display = 'block';
+                } else {
+                    formularioFuerzaElectrica.style.display = 'none';
+                }
+            });
+
+            // =========================================================
+            // 2. EVENTO: Botón "Siguiente" (Genera campos y select)
+            // =========================================================
+            botonNextFE.addEventListener('click', () => {  
+                const cantidadCargasInput = document.getElementById("cantidadCargas").value;
+                const cantidadCargas = parseInt(cantidadCargasInput);
+
+                if (isNaN(cantidadCargas) || cantidadCargas < 2) {
+                    alert("La cantidad de cargas debe ser al menos 2.");
+                    return;
+                }
+
+                // Mostramos el botón de calcular de inmediato
+                botonCalcularFE.style.display = 'block';
+                
+                // Ejecutamos tus funciones generadoras de HTML
+                agregarCamposAdicionales();
+                generarSeleccionSimple(cantidadCargas);
+            });
+
+            // =========================================================
+            // 3. EVENTO: Botón "Calcular" (Independiente y directo)
+            // =========================================================
+            botonCalcularFE.addEventListener('click', () => {
+                const selectElement = document.getElementById('selectCargas');
+                
+                // Verificamos si el select ya existe en el DOM y si el usuario eligió algo
+                if (!selectElement || selectElement.value === "") {
+                    alert("Por favor, seleccione primero la carga a analizar.");
+                    return;
+                }
+
+                const valorElegido = selectElement.value;
+                const cantidadCargas = parseInt(document.getElementById("cantidadCargas").value);
+
+                console.log("Calculando para:", valorElegido, "con un total de cargas de:", cantidadCargas);
+                
+                // Ejecuta tu simulación física al instante
+                fuerzaElectrica(valorElegido, cantidadCargas);
+            });
+            <!---funcion para agregar campos adicionales de carga, coordenada x y coordenada y dependiendo de la cantidad de cargas ingresada por el usuario--->
+            function agregarCamposAdicionales() {
+                        const cantidadCargas = parseInt(document.getElementById("cantidadCargas").value);
+                        const cargas = [];
+                        if (cantidadCargas >= 2) {
+                            for (let i = 1; i <= cantidadCargas; i++) {
+                                const nuevaEtiqueta = document.createElement('div');
+                                nuevaEtiqueta.classList.add('row', 'g-1', 'mb-3', 'align-items-center'); // Usamos 'g-1' para pegar un poco más los campos
+                                nuevaEtiqueta.innerHTML = `
+                                    <div class="col-auto">
+                                        <span class="text-light fw-bold">q${i}:</span>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="form-floating">
+                                            <input type="number" class="form-control" id="q${i}" placeholder="q${i}">
+                                            <label for="q${i}">Valor</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="form-floating">
+                                            <input type="number" class="form-control" id="Exponente${i}" placeholder="Exponente q${i}">
+                                            <label for="Exponente${i}">Exp (10ⁿ)</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="form-floating">
+                                            <input type="number" class="form-control" id="CoordenadaX${i}" placeholder="Coordenada X${i}">
+                                            <label for="CoordenadaX${i}">Coord X</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="form-floating">
+                                            <input type="number" class="form-control" id="CoordenadaY${i}" placeholder="Coordenada Y${i}">
+                                            <label for="CoordenadaY${i}">Coord Y</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3"> 
+                                        <div class="form-floating">
+                                            <input type="number" class="form-control" id="CoordenadaZ${i}" placeholder="Coordenada Z${i}">
+                                            <label for="CoordenadaZ${i}">Coord Z</label>
+                                        </div>
+                                    </div>
+                                `;
+                                cargas.push({
+                                    carga: document.getElementById(`q${i}`),
+                                    exponente: document.getElementById(`Exponente${i}`),
+                                    coordenadaX: document.getElementById(`CoordenadaX${i}`),
+                                    coordenadaY: document.getElementById(`CoordenadaY${i}`),
+                                    coordenadaZ: document.getElementById(`CoordenadaZ${i}`)
+                                });
+                                formularioFuerzaElectrica.appendChild(nuevaEtiqueta);
+                            }
+                        
+                        } else {
+                            alert("La cantidad de cargas debe ser al menos 2.");
+                        }
+                    
+                    }
+            
+            function generarSeleccionSimple(cantidadCargas) {
+                        // 1. Buscamos el contenedor donde va a ir el select
+                        let contenedorSelect = document.getElementById('contenedor-seleccion-cargas');
+                        contenedorSelect.innerHTML = ''; // Limpiamos si había uno previo
+                        // 2. Creamos el contenedor del formulario
+                        const selectDiv = document.createElement('div');
+                        selectDiv.classList.add('mb-3', 'mt-4');
+                        // Opción por defecto (deshabilitada para obligar a elegir una)
+                        let opcionesHTML = `<option value="" disabled selected>Seleccione una carga...</option>`;
+                        // Bucle para generar las opciones desde q1 hasta qn
+                        for (let i = 1; i <= cantidadCargas; i++) {
+                            opcionesHTML += `<option value="q${i}">q${i}</option>`; 
+                        }
+                        // Estructura usando la clase form-select de Bootstrap
+                        selectDiv.innerHTML = `
+                            <label for="selectCargas" class="form-label text-light fw-bold">Selecciona la carga a analizar:</label>
+                            <select class="form-select" id="selectCargas" aria-label="Selección de carga">
+                                ${opcionesHTML}
+                            </select>
+                        `;
+
+                        contenedorSelect.appendChild(selectDiv);
+                        
+                    }
+                 
+            
+            </script>
+            
+         <!--<div class=”row”>
+            <div class=”post-text-box”>
+                 <h1>Prueba Gráfico</h1>
+            </div>
+            <div id="divGraficoFuerzas3D" style="width: 100%; height: 100%;"></div>
+            <div id="divGraficoFuerzas3D" style="width: 100%; height: 500px; background-color: #1e1e1e;"></div>
+            <div id="divGraficoFuerzas3D" style="width: 100%; height: 500px; background-color: #1e1e1e; position: relative;"></div> 
+             
+         </div> --> 
+         <div id="resultado">
+            <!-- <h1>Resultado</h1> -->
+         </div>      
+      </main>
+      <footer>
+         <a href="https://docs.google.com/document/d/1y0S85imHNU-C-bm7jhfIoelWVFOgA_zGxQS61HW_Jf8/edit?usp=sharing">Todos los temas con sus vínculos</a>
+      </footer>
+      <script src="script.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    </body>
+</html>
