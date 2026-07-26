@@ -71,19 +71,9 @@
                     </ol>
                     <p style="line-height: 1.0; font-size: 12px;">La fuerza de interacción entre las cargas se calcula mediante la siguiente expresión:</p>
                 </p>
-                <div class="my-4 p-3 bg-secondary bg-opacity-10 rounded d-inline-block">
-                    <img src="https://latex.codecogs.com/svg.image?F%20=%20k%20%5Ccdot%20%5Cfrac%7B%7Cq_1%20%5Ccdot%20q_2%7C%7D%7Br%5E2%7D" 
-                        alt="Ley de Coulomb: F = k * (|q1 * q2| / r^2)" 
-                        style="filter: invert(1); height: 30px;">
-                    <p style="font-size: 12px; margin-top: 10px; margin-bottom: 5px;">Donde:</p>
-                    <ul style="font-size: 12px; margin-bottom: 0;">
-                        <li><strong>F</strong> es la fuerza electrostática (N).</li>
-                        <li><strong>k</strong> es la constante de Coulomb 8.99x10^9 N.m^2/C^2.</li>
-                        <li><strong>q₁ y q₂</strong> son los valores de las cargas (C).</li>
-                        <li><strong>r</strong> es la distancia de separación entre ambas (m).</li>
-                    </ul>
-                </div>
-            </div>
+                
+                    <img src="img/teoria.jpg" alt="Descripción de la imagen" class="img-fluid">
+               </div>
         </form>
             <script>
             const botonFuerzaElectrica = document.getElementById('Fuerza-Electrica');
@@ -158,7 +148,7 @@
                                     <div class="col-md-2">
                                         <div class="form-floating">
                                             <input type="number" class="form-control" id="q${i}" placeholder="q${i}">
-                                            <label for="q${i}">Valor</label>
+                                            <label for="q${i}">Valor (C)</label>
                                         </div>
                                     </div>
 
@@ -172,21 +162,21 @@
                                     <div class="col-md-2">
                                         <div class="form-floating">
                                             <input type="number" class="form-control" id="CoordenadaX${i}" placeholder="Coordenada X${i}">
-                                            <label for="CoordenadaX${i}">Coord X</label>
+                                            <label for="CoordenadaX${i}">Coord X (m)</label>
                                         </div>
                                     </div>
 
                                     <div class="col-md-2">
                                         <div class="form-floating">
                                             <input type="number" class="form-control" id="CoordenadaY${i}" placeholder="Coordenada Y${i}">
-                                            <label for="CoordenadaY${i}">Coord Y</label>
+                                            <label for="CoordenadaY${i}">Coord Y (m)</label>
                                         </div>
                                     </div>
 
                                     <div class="col-md-3"> 
                                         <div class="form-floating">
                                             <input type="number" class="form-control" id="CoordenadaZ${i}" placeholder="Coordenada Z${i}">
-                                            <label for="CoordenadaZ${i}">Coord Z</label>
+                                            <label for="CoordenadaZ${i}">Coord Z (m)</label>
                                         </div>
                                     </div>
                                 `;
