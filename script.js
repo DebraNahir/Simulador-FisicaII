@@ -2,59 +2,12 @@
 
 function graficarVectoresFuerzaThreeJS(cargasData, contenedorID) {
     console.log("entro a la función grafico con cantidadCargas =", cargasData);
-//**Gráficos (ploty JS) */
-/*
-const dataPlotly = []; 
-//const cantidadCargas = parseInt(document.getElementById("cantidadCargas").value);
-// CORRECCIÓN EN EL BUCLE: Si tus IDs empiezan en 1, usa "i <= cantidadCargas"
-for (let i = 1; i <= cantidadCargas; i++) {
-    // Asegúrate de que los IDs coincidan exactamente con cómo los creaste (ej: CoordenadaX o x)
-    const carga = parseFloat(document.getElementById("q" + i).value);
-    const x = parseFloat(document.getElementById("CoordenadaX" + i).value); 
-    const y = parseFloat(document.getElementById("CoordenadaY" + i).value);
 
-    // Validamos que los datos sean numéricos antes de graficar
-    if (isNaN(carga) || isNaN(x) || isNaN(y)) continue;
-
-    // 2. Creamos un objeto trace genérico para esta iteración
-    let nuevoTrace = {
-        x: [x],
-        y: [y],
-        mode: 'markers',
-        type: 'scatter',
-        marker: { size: 12 },
-        name: `Carga q${i} (${carga} C)` // Corregido: ya no necesitas sumarle 1 a la 'i'
-    };
-
-    // 3. Asignamos el color según el signo de la carga
-    if (carga > 0) {
-        nuevoTrace.marker.color = 'red';
-        dataPlotly.push(nuevoTrace); // Lo guardamos en nuestro array
-    } else if (carga < 0) {
-        nuevoTrace.marker.color = 'blue';
-        dataPlotly.push(nuevoTrace); // Lo guardamos en nuestro array
-    }else{nuevoTrace.marker.color = 'black';
-        dataPlotly.push(nuevoTrace); // Lo guardamos en nuestro array
-    }
-}
-
-
-var layout = {
-  title: {
-      text: 'Click Here<br>to Edit Chart Title'
-  }
-};*/
     const contenedor = document.getElementById(contenedorID);
     contenedor.innerHTML = ''; 
     
     const ancho = contenedor.clientWidth;
     const alto = contenedor.clientHeight;
-    //const contenedor = document.getElementById('divGraficoFuerzas3D');
-    //contenedor.innerHTML = ''; 
-
-    //const ancho = contenedor.clientWidth;
-    //const alto = contenedor.clientHeight;
-
     const escena = new THREE.Scene();
     escena.background = new THREE.Color(0x1e1e1e);
 
@@ -62,41 +15,39 @@ var layout = {
     camara.position.set(5, 5, 8);
 
     // ==========================================
-    // 1. RENDERIZADOR 3D (El que ya tenías)
+    // 1. RENDERIZADOR 3D
     // ==========================================
     const renderizador = new THREE.WebGLRenderer({ antialias: true });
     renderizador.setSize(ancho, alto);
     contenedor.appendChild(renderizador.domElement);
 
     // ==========================================
-    // 2. NUEVO: RENDERIZADOR DE ETIQUETAS HTML (CSS2D)
+    // 2. RENDERIZADOR DE ETIQUETAS HTML (CSS2D)
     // ==========================================
     const etiquetaRenderizador = new THREE.CSS2DRenderer();
     etiquetaRenderizador.setSize(ancho, alto);
     etiquetaRenderizador.domElement.style.position = 'absolute';
     etiquetaRenderizador.domElement.style.top = '0px';
     etiquetaRenderizador.domElement.style.left = '0px';
-    etiquetaRenderizador.domElement.style.pointerEvents = 'none'; // Evita que tape los clics del mouse
+    etiquetaRenderizador.domElement.style.pointerEvents = 'none'; 
     contenedor.appendChild(etiquetaRenderizador.domElement);
 
     // ==========================================
-    // 3. NUEVO: REFERENCIAS DE LOS EJES CARTESIANOS
+    // 3. REFERENCIAS DE LOS EJES CARTESIANOS
     // ==========================================
-    // El número 5 indica el largo de las líneas de los ejes
     const ejesHelper = new THREE.AxesHelper(5); 
     escena.add(ejesHelper);
 
     // ==========================================
-    // NUEVO: AGREGAR NUMERACIÓN A LOS EJES
+    // AGREGAR NUMERACIÓN A LOS EJES
     // ==========================================
     function crearNumeracionEjes(rangoMaximo, paso) {
-        // Colores para identificar a qué eje pertenece cada número
         const colores = { x: '#ff4444', y: '#44ff44', z: '#4444ff' };
 
         for (let i = -rangoMaximo; i <= rangoMaximo; i += paso) {
-            if (i === 0) continue; // Nos saltamos el origen para que no se encimen los ceros
+            if (i === 0) continue; 
 
-            // --- EJE X (Números a lo largo de la línea roja) ---
+            // --- EJE X ---
             const divX = document.createElement('div');
             divX.textContent = i;
             divX.style.color = colores.x;
@@ -104,10 +55,10 @@ var layout = {
             divX.style.fontFamily = 'sans-serif';
             
             const labelX = new THREE.CSS2DObject(divX);
-            labelX.position.set(i, -0.2, 0); // Lo bajamos un poquito del eje para que no lo tape
+            labelX.position.set(i, -0.2, 0); 
             escena.add(labelX);
 
-            // --- EJE Y (Números a lo largo de la línea verde) ---
+            // --- EJE Y ---
             const divY = document.createElement('div');
             divY.textContent = i;
             divY.style.color = colores.y;
@@ -115,10 +66,10 @@ var layout = {
             divY.style.fontFamily = 'sans-serif';
             
             const labelY = new THREE.CSS2DObject(divY);
-            labelY.position.set(-0.2, i, 0); // Lo desplazamos a la izquierda del eje
+            labelY.position.set(-0.2, i, 0); 
             escena.add(labelY);
 
-            // --- EJE Z (Números a lo largo de la línea azul) ---
+            // --- EJE Z ---
             const divZ = document.createElement('div');
             divZ.textContent = i;
             divZ.style.color = colores.z;
@@ -126,15 +77,13 @@ var layout = {
             divZ.style.fontFamily = 'sans-serif';
             
             const labelZ = new THREE.CSS2DObject(divZ);
-            labelZ.position.set(0, -0.2, i); // Lo acomodamos en la profundidad
+            labelZ.position.set(0, -0.2, i); 
             escena.add(labelZ);
         }
     }
 
-    // Llamamos a la función: Queremos numerar del -5 al 5, de 1 en 1 metro
     crearNumeracionEjes(5, 1);
 
-    // Ajustamos los controles para que interactúen con el canvas de etiquetas
     const controles = new THREE.OrbitControls(camara, renderizador.domElement);
     controles.enableDamping = true;
 
@@ -150,8 +99,6 @@ var layout = {
     escena.add(rejilla);
 
     // --- PROCESAR LAS CARGAS ---
-    const escalaFuerza = 1e6; 
-
     cargasData.forEach(c => {
         // Esfera de la carga
         const geometriaEsfera = new THREE.SphereGeometry(0.15, 32, 32);
@@ -160,9 +107,7 @@ var layout = {
         esferaCarga.position.set(c.x, c.y, c.z);
         escena.add(esferaCarga);
 
-        // ==========================================
-        // 4. NUEVO: CREAR LA ETIQUETA "q1", "q2", etc.
-        // ==========================================
+        // CREAR LA ETIQUETA "q1", "q2", etc.
         const divEtiqueta = document.createElement('div');
         divEtiqueta.textContent = `q${c.id}`;
         divEtiqueta.style.color = '#ffffff';
@@ -170,36 +115,59 @@ var layout = {
         divEtiqueta.style.fontWeight = 'bold';
         divEtiqueta.style.fontSize = '14px';
         divEtiqueta.style.padding = '2px 6px';
-        divEtiqueta.style.background = 'rgba(0, 0, 0, 0.6)'; // Fondo semitransparente oscuro
+        divEtiqueta.style.background = 'rgba(0, 0, 0, 0.6)'; 
         divEtiqueta.style.borderRadius = '4px';
-        divEtiqueta.style.marginLeft = '25px'; // La desplaza un poco hacia arriba de la esfera
+        divEtiqueta.style.marginLeft = '25px'; 
 
-        // Convertimos el elemento HTML en un objeto 2D de Three.js
         const etiquetaObjeto = new THREE.CSS2DObject(divEtiqueta);
-        etiquetaObjeto.position.set(0, 0, 0); // Posición relativa al centro de la esfera
-        esferaCarga.add(etiquetaObjeto); // La añadimos como "hija" de la esfera para que la siga
+        etiquetaObjeto.position.set(0, 0, 0); 
+        esferaCarga.add(etiquetaObjeto); 
 
-        // Flecha de fuerza
+        // ==========================================
+        // CÁLCULO REDIMENSIONADO DE LA FLECHA (NUEVO)
+        // ==========================================
         const origen = new THREE.Vector3(c.x, c.y, c.z);
         const fuerzaVector = new THREE.Vector3(c.fx, c.fy, c.fz);
-        const longitudVector = fuerzaVector.length() * escalaFuerza; 
+        const magnitudReal = fuerzaVector.length();
 
-        if (longitudVector > 0) {
+        if (magnitudReal > 0) {
+            // LÍMITES EN UNIDADES DE THREE.JS
+            const LONGITUD_MINIMA = 0.4; // Para que no desaparezca en fuerzas chicas
+            const LONGITUD_MAXIMA = 3.5; // Para que no se desborde del GridHelper
+
+            // Escalado logarítmico: suaviza diferencias masivas de magnitudes
+            // Sumamos 1 dentro del logaritmo para evitar valores negativos si la fuerza es < 1
+            let longitudVector = LONGITUD_MINIMA + (Math.log10(magnitudReal + 1) * 0.5);
+
+            // Acotamiento estricto por seguridad (Clamping)
+            if (longitudVector > LONGITUD_MAXIMA) {
+                longitudVector = LONGITUD_MAXIMA;
+            }
+
             const direccion = fuerzaVector.clone().normalize();
-            const longitudCabeza = Math.min(0.15, longitudVector * 0.5);
+            
+            // Proporciones dinámicas de la punta de la flecha basándose en su nuevo largo
+            const longitudCabeza = longitudVector * 0.25; 
             const anchoCabeza = 0.08;
 
-            const flechaFuerza = new THREE.ArrowHelper(direccion, origen, longitudVector, 0x00adb5, longitudCabeza, anchoCabeza);
+            const flechaFuerza = new THREE.ArrowHelper(
+                direccion, 
+                origen, 
+                longitudVector, 
+                0x00adb5, 
+                longitudCabeza, 
+                anchoCabeza
+            );
             escena.add(flechaFuerza);
         }
     });
 
-    // Bucle de animación (ahora renderiza las dos cosas)
+    // Bucle de animación
     function animar() {
         requestAnimationFrame(animar);
         controles.update();
-        renderizador.render(escena, camara); // Dibuja el 3D
-        etiquetaRenderizador.render(escena, camara); // Dibuja las etiquetas 2D
+        renderizador.render(escena, camara); 
+        etiquetaRenderizador.render(escena, camara); 
     }
     
     animar();
@@ -213,11 +181,6 @@ var layout = {
         renderizador.setSize(nuevoAncho, nuevoAlto);
         etiquetaRenderizador.setSize(nuevoAncho, nuevoAlto);
     });
-
-
-    
-
-/*Plotly.newPlot("miplot", dataPlotly, layout, {editable: true});*/
 }
 
 function fuerzaElectrica(puntoAnalizado, cantidadCargas) {
