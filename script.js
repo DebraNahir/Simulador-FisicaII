@@ -333,3 +333,33 @@ function fuerzaElectrica(puntoAnalizado, cantidadCargas) {
   // Renderizamos el escenario macro con todas las cargas distribuidas
   graficarVectoresFuerzaThreeJS(datosPuntosFinales, idDivGraficoFinal);
 }
+// ==========================================
+// FUNCIÓN PARA CONTAR VISITAS
+// ==========================================
+async function registrarVisita() {
+    try {
+        // Hacemos la petición a la función que guardaste en api/visitas.js
+        const respuesta = await fetch('/api/visitas');
+        
+        if (!respuesta.ok) {
+            throw new Error(`Error en el servidor: ${respuesta.status}`);
+        }
+
+        const datos = await respuesta.json();
+        console.log(`¡Visita registrada! Eres el visitante número: ${datos.count}`);
+        
+        // [OPCIONAL] Si quieres mostrar el número en tu página web:
+        const elementoHTML = document.getElementById('contador-visitas');
+        if (elementoHTML) {
+            elementoHTML.textContent = datos.count;
+        }
+
+    } catch (error) {
+        // Si hay un error (por ejemplo, en tu computadora local porque no existen las llaves),
+        // se mostrará este mensaje en la consola sin romper el resto de tu simulador.
+        console.warn("No se pudo registrar la visita en este entorno:", error.message);
+    }
+}
+
+// Le decimos al navegador que ejecute la función apenas termine de cargar la página
+document.addEventListener('DOMContentLoaded', registrarVisita);
